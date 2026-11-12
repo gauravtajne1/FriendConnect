@@ -4,8 +4,11 @@ Exposes RESTful endpoints for DAA graph algorithms, user management,
 friendship management, and analytics.
 """
 
+import os
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 
@@ -49,8 +52,8 @@ class FriendshipCreate(BaseModel):
 
 # Endpoints
 
-@app.get("/")
-def root():
+@app.get("/api")
+def api_root():
     return {
         "project": "FriendConnect — Social Network Graph Analysis",
         "description": "Educational DAA Graph Application demonstrating Adjacency Lists, Hashing, BFS, DFS, and Set Operations.",
@@ -316,3 +319,19 @@ def get_complexity_reference():
             }
         ]
     }
+
+
+# Mount built React frontend when deployed as a unified full-stack service
+frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
+if os.path.exists(frontend_dist):
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        file_path = os.path.join(frontend_dist, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
+
