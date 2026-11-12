@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Share2,
   ZoomIn,
@@ -12,11 +12,15 @@ import {
   Info,
   Layers,
   X,
-  ExternalLink
-} from 'lucide-react';
-import { api } from '../services/api';
+  ExternalLink,
+} from "lucide-react";
+import { api } from "../services/api";
 
-export default function GraphVisualization({ graphData, onNavigate, showToast }) {
+export default function GraphVisualization({
+  graphData,
+  onNavigate,
+  showToast,
+}) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -36,8 +40,8 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
 
   // BFS Highlight state
   const [highlightPath, setHighlightPath] = useState([]);
-  const [pathSource, setPathSource] = useState('u01');
-  const [pathTarget, setPathTarget] = useState('u05');
+  const [pathSource, setPathSource] = useState("u01");
+  const [pathTarget, setPathTarget] = useState("u05");
 
   // Dragging state
   const draggedNodeRef = useRef(null);
@@ -45,11 +49,11 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
 
   // Community color palette (Whitish theme friendly)
   const communityColors = {
-    1: '#2563EB', // Blue 600
-    2: '#059669', // Emerald 600
-    3: '#D97706', // Amber 600
-    4: '#DB2777', // Pink 600
-    5: '#7C3AED', // Purple 600
+    1: "#2563EB", // Blue 600
+    2: "#059669", // Emerald 600
+    3: "#D97706", // Amber 600
+    4: "#DB2777", // Pink 600
+    5: "#7C3AED", // Purple 600
   };
 
   // Initialize node layout from graphData
@@ -63,13 +67,16 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
     // Component centers so different components cluster naturally in different areas
     const componentCenters = {
       1: { x: width * 0.35, y: height * 0.45 },
-      2: { x: width * 0.72, y: height * 0.40 },
-      3: { x: width * 0.55, y: height * 0.80 },
+      2: { x: width * 0.72, y: height * 0.4 },
+      3: { x: width * 0.55, y: height * 0.8 },
     };
 
     const initialNodes = graphData.users.map((u, i) => {
       const commId = userCommMap[u.id]?.community_id || 1;
-      const center = componentCenters[commId] || { x: width * 0.5, y: height * 0.5 };
+      const center = componentCenters[commId] || {
+        x: width * 0.5,
+        y: height * 0.5,
+      };
       const angle = (i * (2 * Math.PI)) / graphData.users.length;
       const radius = 60 + (i % 3) * 20;
 
@@ -79,7 +86,7 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
         degree: u.degree,
         friends: u.friends || [],
         community_id: commId,
-        color: communityColors[commId] || '#4F46E5',
+        color: communityColors[commId] || "#4F46E5",
         x: center.x + Math.cos(angle) * radius + (Math.random() - 0.5) * 40,
         y: center.y + Math.sin(angle) * radius + (Math.random() - 0.5) * 40,
         vx: 0,
@@ -218,13 +225,16 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
       const res = await api.getShortestPath(pathSource, pathTarget);
       if (res.connected) {
         setHighlightPath(res.path);
-        showToast(`Shortest path highlighted: ${res.path.join(' → ')} (${res.distance} edges)`, 'success');
+        showToast(
+          `Shortest path highlighted: ${res.path.join(" → ")} (${res.distance} edges)`,
+          "success",
+        );
       } else {
         setHighlightPath([]);
-        showToast('No connection exists between selected users.', 'error');
+        showToast("No connection exists between selected users.", "error");
       }
     } catch (err) {
-      showToast(err.message, 'error');
+      showToast(err.message, "error");
     }
   };
 
@@ -281,7 +291,7 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
             return { ...n, x: mouseX, y: mouseY, vx: 0, vy: 0 };
           }
           return n;
-        })
+        }),
       );
       return;
     }
@@ -340,23 +350,31 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse" />
             <span className="text-slate-500">Users:</span>
-            <strong className="font-mono text-slate-900 text-sm font-bold">{stats.num_users}</strong>
+            <strong className="font-mono text-slate-900 text-sm font-bold">
+              {stats.num_users}
+            </strong>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-2">
             <span className="text-slate-500">Friendships:</span>
-            <strong className="font-mono text-slate-900 text-sm font-bold">{stats.num_friendships}</strong>
+            <strong className="font-mono text-slate-900 text-sm font-bold">
+              {stats.num_friendships}
+            </strong>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-2">
             <span className="text-slate-500">Communities:</span>
-            <strong className="font-mono text-slate-900 text-sm font-bold">{stats.num_components || 3}</strong>
+            <strong className="font-mono text-slate-900 text-sm font-bold">
+              {stats.num_components || 3}
+            </strong>
           </div>
         </div>
 
         {/* Shortest Path Overlay Controls */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-slate-600 font-bold hidden sm:inline">Highlight Path:</span>
+          <span className="text-xs text-slate-600 font-bold hidden sm:inline">
+            Highlight Path:
+          </span>
           <select
             value={pathSource}
             onChange={(e) => setPathSource(e.target.value)}
@@ -404,14 +422,18 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setPhysicsEnabled(!physicsEnabled)}
-            title={physicsEnabled ? 'Pause Physics' : 'Resume Physics'}
+            title={physicsEnabled ? "Pause Physics" : "Resume Physics"}
             className={`p-2 rounded-lg border text-xs transition ${
               physicsEnabled
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-slate-100 border-slate-200 text-slate-500'
+                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                : "bg-slate-100 border-slate-200 text-slate-500"
             }`}
           >
-            {physicsEnabled ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {physicsEnabled ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
 
           <button
@@ -454,7 +476,7 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
           className="absolute inset-0 opacity-40 pointer-events-none"
           style={{
             backgroundImage: `radial-gradient(circle, #cbd5e1 1.2px, transparent 1.2px)`,
-            backgroundSize: '28px 28px',
+            backgroundSize: "28px 28px",
           }}
         />
 
@@ -466,24 +488,34 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-blue-600 shadow-xs" />
-              <span className="text-slate-700 font-medium">Community 1 (u01 - u05)</span>
+              <span className="text-slate-700 font-medium">
+                Community 1 (u01 - u05)
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-600 shadow-xs" />
-              <span className="text-slate-700 font-medium">Community 2 (u06 - u08)</span>
+              <span className="text-slate-700 font-medium">
+                Community 2 (u06 - u08)
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-amber-600 shadow-xs" />
-              <span className="text-slate-700 font-medium">Community 3 (u09 Vivaan)</span>
+              <span className="text-slate-700 font-medium">
+                Community 3 (u09 Vivaan)
+              </span>
             </div>
             <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
               <span className="w-4 h-0.5 bg-slate-400 rounded" />
-              <span className="text-slate-600">Friendship (Undirected Edge)</span>
+              <span className="text-slate-600">
+                Friendship (Undirected Edge)
+              </span>
             </div>
             {highlightPath.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="w-4 h-1 bg-amber-500 rounded shadow-xs" />
-                <span className="text-amber-700 font-bold">BFS Shortest Path</span>
+                <span className="text-amber-700 font-bold">
+                  BFS Shortest Path
+                </span>
               </div>
             )}
           </div>
@@ -491,7 +523,8 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
 
         {/* Instructions banner */}
         <div className="absolute bottom-4 left-4 z-20 text-[11px] text-slate-600 bg-white/90 px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-xs pointer-events-none hidden md:block font-medium">
-          Click & drag nodes • Drag canvas to pan • Scroll to zoom • Click node to inspect details
+          Click & drag nodes • Drag canvas to pan • Scroll to zoom • Click node
+          to inspect details
         </div>
 
         {/* SVG Drawing Layer */}
@@ -499,7 +532,7 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
           className="w-full h-full"
           style={{
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-            transformOrigin: '0 0',
+            transformOrigin: "0 0",
           }}
         >
           {/* Edges */}
@@ -518,10 +551,12 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
                   y1={sourceNode.y}
                   x2={targetNode.x}
                   y2={targetNode.y}
-                  stroke={isHighlighted ? '#D97706' : '#94A3B8'}
+                  stroke={isHighlighted ? "#D97706" : "#94A3B8"}
                   strokeWidth={isHighlighted ? 4 : 2}
-                  strokeDasharray={isHighlighted ? '6 3' : 'none'}
-                  className={isHighlighted ? 'animate-pulse' : 'transition-colors'}
+                  strokeDasharray={isHighlighted ? "6 3" : "none"}
+                  className={
+                    isHighlighted ? "animate-pulse" : "transition-colors"
+                  }
                   strokeLinecap="round"
                 />
               );
@@ -546,11 +581,11 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
                     <circle
                       r={node.radius + 8}
                       fill="none"
-                      stroke={isInPath ? '#D97706' : '#4F46E5'}
+                      stroke={isInPath ? "#D97706" : "#4F46E5"}
                       strokeWidth={3}
                       strokeDasharray="4 2"
                       className="animate-spin"
-                      style={{ animationDuration: '8s' }}
+                      style={{ animationDuration: "8s" }}
                     />
                   )}
 
@@ -558,7 +593,7 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
                   <circle
                     r={node.radius}
                     fill="#FFFFFF"
-                    stroke={isInPath ? '#D97706' : node.color}
+                    stroke={isInPath ? "#D97706" : node.color}
                     strokeWidth={isSelected || isHovered ? 4 : 2.8}
                     className="transition-all duration-150"
                     filter="drop-shadow(0 2px 4px rgba(0,0,0,0.12))"
@@ -625,7 +660,9 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
                   style={{ backgroundColor: selectedNode.color }}
                 />
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{selectedNode.name}</h4>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    {selectedNode.name}
+                  </h4>
                   <span className="font-mono text-[11px] text-indigo-600 font-bold">
                     {selectedNode.id}
                   </span>
@@ -643,11 +680,15 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
             <div className="space-y-2">
               <div className="flex justify-between py-1 border-b border-slate-100">
                 <span className="text-slate-500">Community:</span>
-                <span className="font-bold text-slate-900">Community {selectedNode.community_id}</span>
+                <span className="font-bold text-slate-900">
+                  Community {selectedNode.community_id}
+                </span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100">
                 <span className="text-slate-500">Degree (Friends):</span>
-                <span className="font-mono font-bold text-emerald-600">{selectedNode.degree}</span>
+                <span className="font-mono font-bold text-emerald-600">
+                  {selectedNode.degree}
+                </span>
               </div>
             </div>
 
@@ -676,7 +717,7 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
               <button
                 onClick={() => {
                   setPathSource(selectedNode.id);
-                  showToast(`Set ${selectedNode.id} as BFS source`, 'success');
+                  showToast(`Set ${selectedNode.id} as BFS source`, "success");
                 }}
                 className="flex-1 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-center font-semibold transition"
               >
@@ -685,7 +726,10 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
               <button
                 onClick={() => {
                   setPathTarget(selectedNode.id);
-                  showToast(`Set ${selectedNode.id} as BFS destination`, 'success');
+                  showToast(
+                    `Set ${selectedNode.id} as BFS destination`,
+                    "success",
+                  );
                 }}
                 className="flex-1 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-center font-semibold transition"
               >
@@ -706,10 +750,13 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
           >
             <div className="font-bold flex items-center gap-1.5">
               <span>{hoveredNode.name}</span>
-              <span className="font-mono text-indigo-300 text-[10px]">({hoveredNode.id})</span>
+              <span className="font-mono text-indigo-300 text-[10px]">
+                ({hoveredNode.id})
+              </span>
             </div>
             <div className="text-[11px] text-slate-300">
-              Community {hoveredNode.community_id} • {hoveredNode.degree} friends
+              Community {hoveredNode.community_id} • {hoveredNode.degree}{" "}
+              friends
             </div>
           </div>
         )}
