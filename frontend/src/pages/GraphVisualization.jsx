@@ -163,8 +163,8 @@ export default function GraphVisualization({ graphData, onNavigate, showToast })
             n1.vy += fy;
           }
           if (draggedNodeRef.current !== n2.id) {
-            n2.vx += fx;
-            n2.vy += fy;
+            n2.vx -= fx;
+            n2.vy -= fy;
           }
         });
 
