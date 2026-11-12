@@ -1,0 +1,25 @@
+# Node / Frontend dependencies & builds
+node_modules/
+friendconnect/frontend/node_modules/
+frontend/node_modules/
+dist/
+dist-ssr/
+*.local
+.npm
+
+# Python / Backend caches & venvs
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+
+# System & IDE files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
